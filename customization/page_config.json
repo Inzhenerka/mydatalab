@@ -1,0 +1,8 @@
+{
+    "appName": "JupyterLab",
+    "appUrl": "/lab",
+    "pageTitle": "JupyterLab",
+    "disabledExtensions": {
+        "@jupyterlab/apputils-extension:announcements": true
+    }
+}

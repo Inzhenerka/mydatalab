@@ -1,0 +1,14 @@
+{
+  "name": "My Data Lab by Inzhenerka.Tech",
+  "image": "ghcr.io/Inzhenerka/mydatalab:latest",
+  "forwardPorts": [8888, 9000, 9001],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter"
+      ]
+    }
+  },
+  "remoteUser": "jovyan"
+}

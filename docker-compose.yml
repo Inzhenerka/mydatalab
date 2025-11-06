@@ -1,0 +1,19 @@
+services:
+  mydatalab:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mydatalab:local
+    container_name: mydatalab
+    ports:
+      - "8888:8888" # Jupyter
+      - "9000:9000" # MinIO API
+      - "9001:9001" # MinIO Console
+      - "1111:1111" # Landing page
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    volumes:
+      - ./jupyter-work:/home/jovyan/work
+      - ./minio-data:/data/minio
+    restart: unless-stopped
