@@ -12,9 +12,13 @@
 ## Быстрый старт
 
 1. Установите Docker и Docker Compose.
-2. Запустите:
+2. Клонируйте репозиторий:
    ```bash
-   docker compose up --build
+   git clone https://github.com/Inzhenerka/mydatalab
+   cd mydatalab
    ```
-3. Откройте ссылки из логов для доступа к UI/ноутбукам.
-4. Данные доступны через S3-совместимый эндпоинт MinIO.
+3. Запустите контейнер:
+   ```bash
+   docker compose up
+   ```
+4. Откройте в браузере стартовую страницу с описанием всех сервисов: http://localhost:1111

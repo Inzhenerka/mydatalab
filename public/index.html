@@ -9,8 +9,8 @@
             --bg: #0f172a;
             --fg: #e2e8f0;
             --muted: #94a3b8;
-            --accent: #38bdf8;
-            --accent-dark: #041016;
+            --accent: #0ea5e9;
+            --accent-dark: #0c4a6e;
             --border-color: rgba(148, 163, 184, 0.2);
             --border-color-light: rgba(148, 163, 184, 0.15);
             --secondary-bg: rgba(148, 163, 184, 0.15);
@@ -109,6 +109,20 @@
         .hero-text {
             flex: 1;
             min-width: 0;
+        }
+
+        .hero-title {
+            color: #6e3aad;
+            display: inline-block;
+        }
+
+        .hero-title-signature {
+            display: block;
+            font-size: 0.25em;
+            font-weight: 300;
+            margin-top: 0.5em;
+            text-align: right;
+            white-space: nowrap;
         }
 
         .hero .lead {
@@ -280,10 +294,13 @@
 <section class="hero">
     <div class="hero-content">
         <div class="hero-image">
-            <img src="assets/cover.png" alt="My Data Lab Cover" width="400" height="400" loading="eager">
+            <img src="assets/cover.png" alt="My Data Lab Cover" width="837" height="874" loading="eager">
         </div>
         <div class="hero-text">
-            <h1 style="color: #6e3aad">My Data Lab</h1>
+            <h1 class="hero-title">
+                My Data Lab
+                <span class="hero-title-signature">by Inzhenerka.Tech</span>
+            </h1>
             <p class="lead">Персональная лаборатория данных для обучения</p>
         </div>
     </div>
@@ -333,7 +350,7 @@
 
         <section class="mini" id="minio">
             <h3>
-                <img class="icon" src="assets/minio.svg" alt="" width="48" height="48" loading="lazy">
+                <img class="icon" src="assets/minio.png" alt="" width="48" height="48" loading="lazy">
                 MinIO Object Storage
             </h3>
             <p>Локальное объектное хранилище с S3-совместимым API. Храните датасеты, результаты обработки и любые файлы.

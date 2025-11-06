@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: mydatalab:local
+    image: ghcr.io/inzhenerka/mydatalab:latest
     container_name: mydatalab
     ports:
       - "8888:8888" # Jupyter
