@@ -14,6 +14,7 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
     volumes:
+      - ./notebooks/iceberg:/home/jovyan/iceberg
       - ./jupyter-work:/home/jovyan/work
       - ./minio-data:/data/minio
     restart: unless-stopped

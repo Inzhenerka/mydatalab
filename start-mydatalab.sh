@@ -20,7 +20,7 @@ mc mb local/edu-bucket >/dev/null 2>&1 || true
 echo "MinIO is up. Bucket 'edu-bucket' is ready."
 
 echo "Starting static landing on http://127.0.0.1:1111  http://0.0.0.0:1111"
-(cd /home/jovyan/public && python -m http.server 1111 --bind 0.0.0.0) &
+(cd /home/jovyan/start && python -m http.server 1111 --bind 0.0.0.0) &
 
 
 # здесь продолжается ваш запуск MinIO/Jupyter и т.д.

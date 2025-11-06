@@ -198,6 +198,11 @@
             margin-block-start: var(--spacing-lg);
         }
 
+        /* Центрируем кнопку в интро, не затрагивая другие блоки .cta */
+        .intro .cta {
+            justify-content: center;
+        }
+
         .btn {
             display: inline-flex;
             align-items: center;
@@ -313,6 +318,9 @@
         Полнофункциональная среда для изучения анализа данных, машинного обучения и работы с большими данными.
         Всё необходимое уже настроено и готово к работе — просто запустите Docker и начните экспериментировать.
     </p>
+    <div class="cta">
+        <a class="btn secondary" href="https://github.com/Inzhenerka/mydatalab" target="_blank" rel="noopener">📃 Инструкции и исходники</a>
+    </div>
 </section>
 
 <div class="wrap">
@@ -344,7 +352,7 @@
 
             <div class="cta">
                 <a class="btn secondary" href="https://spark.apache.org/docs/latest/api/python/" target="_blank"
-                   rel="noopener">📚 Документация PySpark</a>
+                   rel="noopener">📚 Документация</a>
             </div>
         </section>
 
@@ -379,7 +387,7 @@
     </div>
 
     <footer>
-        © 2025 My Data Lab by Inzhenerka.Tech. Сделано с заботой об обучении
+        © 2025 My Data Lab by Inzhenerka.Tech
     </footer>
 </div>
 </body>

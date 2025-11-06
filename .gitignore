@@ -1,3 +1,4 @@
 .idea
+.ipynb_checkpoints
 jupyter-work
 minio-data

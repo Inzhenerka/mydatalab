@@ -23,11 +23,8 @@ COPY customization/page_config.json /home/jovyan/.jupyter/labconfig/page_config.
 
 RUN chown -R $NB_UID:$NB_GID /home/jovyan/.jupyter
 
-COPY demo /home/jovyan/demo
-RUN chown -R $NB_UID:$NB_GID /home/jovyan/demo
-
-COPY public /home/jovyan/public
-RUN chown -R $NB_UID:$NB_GID /home/jovyan/public
+COPY start /home/jovyan/start
+RUN chown -R $NB_UID:$NB_GID /home/jovyan/start
 
 COPY start-mydatalab.sh /usr/local/bin/start-mydatalab.sh
 RUN chmod +x /usr/local/bin/start-mydatalab.sh

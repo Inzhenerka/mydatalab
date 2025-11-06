@@ -1,5 +1,5 @@
 {
-  "name": "My Data Lab by Inzhenerka.Tech",
+  "name": "My Data Lab",
   "image": "ghcr.io/Inzhenerka/mydatalab:latest",
   "forwardPorts": [8888, 9000, 9001],
   "customizations": {
