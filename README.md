@@ -19,6 +19,7 @@
    ```
 3. Запустите контейнер:
    ```bash
+   docker compose pull
    docker compose up
    ```
 4. Откройте в браузере стартовую страницу с описанием всех сервисов: http://localhost:1111
