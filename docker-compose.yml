@@ -10,11 +10,17 @@ services:
       - "9000:9000" # MinIO API
       - "9001:9001" # MinIO Console
       - "1111:1111" # Landing page
+      - "6432:5432" # PostgreSQL
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
     volumes:
       - ./notebooks/iceberg:/home/jovyan/iceberg
       - ./jupyter-work:/home/jovyan/work
       - ./minio-data:/data/minio
-    restart: unless-stopped
+      - ./postgres-data:/home/jovyan/postgres-data:Z
+    restart: no
