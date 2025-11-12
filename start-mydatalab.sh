@@ -10,6 +10,14 @@ MINIO_SERVER_ADDRESS=${MINIO_SERVER_ADDRESS:-:9000}
 MINIO_CONSOLE_ADDRESS=${MINIO_CONSOLE_ADDRESS:-:9001}
 STATIC_PORT=${STATIC_PORT:-1111}
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -d "$SCRIPT_DIR/scripts" ]; then
+  DEFAULT_SERVICE_DIR="$SCRIPT_DIR/scripts"
+else
+  DEFAULT_SERVICE_DIR="$SCRIPT_DIR"
+fi
+SERVICE_SCRIPTS_DIR=${SERVICE_SCRIPTS_DIR:-$DEFAULT_SERVICE_DIR}
+
 if [ "$(id -u)" -eq 0 ]; then
   NB_UID=${NB_UID:-1000}
   NB_GID=${NB_GID:-100}
@@ -35,15 +43,6 @@ log() {
   printf '[%s] %s\n' "$(date -Iseconds)" "$*"
 }
 
-minio_loopback_url() {
-  local address=$1
-  local port=$address
-  if [[ $address == *:* ]]; then
-    port=${address##*:}
-  fi
-  printf 'http://127.0.0.1:%s' "$port"
-}
-
 stop_pid() {
   local name=$1 pid=$2
   if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
@@ -65,64 +64,9 @@ cleanup() {
 }
 trap cleanup EXIT
 
-tail_postgres_logs() {
-  if [ -f "$POSTGRES_LOG_FILE" ]; then
-    log "Last $POSTGRES_LOG_TAIL_LINES log lines:"
-    tail -n "$POSTGRES_LOG_TAIL_LINES" "$POSTGRES_LOG_FILE" || true
-  fi
-}
-
-wait_for_postgres() {
-  local attempts=30
-  until pg_isready -h 127.0.0.1 -p "$POSTGRES_PORT" -U "$POSTGRES_USER" >/dev/null 2>&1; do
-    ((attempts--)) || {
-      log "PostgreSQL did not start in time"
-      tail_postgres_logs
-      return 1
-    }
-    sleep 1
-  done
-  log "PostgreSQL is ready"
-}
-
-start_postgres() {
-  mkdir -p "$POSTGRES_DATA_DIR" "$(dirname "$POSTGRES_LOG_FILE")" /var/run/postgresql || true
-  chmod 700 "$POSTGRES_DATA_DIR" 2>/dev/null || true
-  log "Starting PostgreSQL on port $POSTGRES_PORT"
-  local args=(-p "$POSTGRES_PORT" -c "listen_addresses=${POSTGRES_LISTEN_ADDRESSES}")
-  local extra_args=()
-  if [ -n "${POSTGRES_EXTRA_ARGS:-}" ]; then
-    # shellcheck disable=SC2206
-    extra_args=( $POSTGRES_EXTRA_ARGS )
-    args+=("${extra_args[@]}")
-  fi
-  (
-    "$POSTGRES_ENTRYPOINT" postgres "${args[@]}" \
-      > >(tee -a "$POSTGRES_LOG_FILE") 2>&1
-  ) &
-  POSTGRES_PID=$!
-  wait_for_postgres
-}
-
-start_minio() {
-  log "Starting MinIO on ${MINIO_SERVER_ADDRESS} (console ${MINIO_CONSOLE_ADDRESS})"
-  minio server /data/minio --address "$MINIO_SERVER_ADDRESS" --console-address "$MINIO_CONSOLE_ADDRESS" &
-  MINIO_PID=$!
-  sleep 5
-  mc alias set local "$(minio_loopback_url "$MINIO_SERVER_ADDRESS")" "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD" >/dev/null 2>&1 || true
-  mc mb local/edu-bucket >/dev/null 2>&1 || true
-  log "MinIO is ready"
-}
-
-start_static_site() {
-  log "Serving landing page on 0.0.0.0:${STATIC_PORT}"
-  (cd /home/jovyan/start && python -m http.server "$STATIC_PORT" --bind 0.0.0.0) &
-  STATIC_PID=$!
-}
-
-start_postgres
-start_minio
-start_static_site
+POSTGRES_PID="$("$SERVICE_SCRIPTS_DIR/start-postgres.sh")"
+MINIO_PID="$("$SERVICE_SCRIPTS_DIR/start-minio.sh")"
+STATIC_PID="$("$SERVICE_SCRIPTS_DIR/start-static-site.sh")"
 
 exec /usr/local/bin/start.sh start-notebook.py \
   --ServerApp.token='' \

@@ -1,0 +1,39 @@
+#!/bin/bash
+set -Eeuo pipefail
+
+MINIO_SERVER_ADDRESS=${MINIO_SERVER_ADDRESS:-:9000}
+MINIO_CONSOLE_ADDRESS=${MINIO_CONSOLE_ADDRESS:-:9001}
+MINIO_ROOT_USER=${MINIO_ROOT_USER:-minioadmin}
+MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-minioadmin}
+MINIO_ALIAS=${MINIO_ALIAS:-local}
+MINIO_BUCKET=${MINIO_BUCKET:-edu-bucket}
+MINIO_DATA_DIR=${MINIO_DATA_DIR:-/data/minio}
+MINIO_LOG_FILE=${MINIO_LOG_FILE:-/home/jovyan/minio.log}
+
+log() {
+  printf '[%s] [minio] %s\n' "$(date -Iseconds)" "$*" >&2
+}
+
+minio_loopback_url() {
+  local address=$1
+  local port=$address
+  if [[ $address == *:* ]]; then
+    port=${address##*:}
+  fi
+  printf 'http://127.0.0.1:%s' "$port"
+}
+
+mkdir -p "$MINIO_DATA_DIR" "$(dirname "$MINIO_LOG_FILE")"
+touch "$MINIO_LOG_FILE"
+
+log "Starting MinIO on ${MINIO_SERVER_ADDRESS} (console ${MINIO_CONSOLE_ADDRESS})"
+minio server "$MINIO_DATA_DIR" --address "$MINIO_SERVER_ADDRESS" --console-address "$MINIO_CONSOLE_ADDRESS" \
+  > >(tee -a "$MINIO_LOG_FILE" >&2) 2>&1 &
+minio_pid=$!
+
+sleep 5
+mc alias set "$MINIO_ALIAS" "$(minio_loopback_url "$MINIO_SERVER_ADDRESS")" "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD" >/dev/null 2>&1 || true
+mc mb "$MINIO_ALIAS/$MINIO_BUCKET" >/dev/null 2>&1 || true
+log "MinIO is ready"
+
+printf '%s\n' "$minio_pid"
