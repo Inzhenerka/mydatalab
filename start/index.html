@@ -84,13 +84,28 @@
             text-align: center;
         }
 
-        .intro p {
+        .description {
             margin: 0;
             color: var(--muted);
             font-size: 1.125rem;
             line-height: 1.7;
-            max-width: 70ch;
             margin-inline: auto;
+        }
+
+        .disclaimer {
+            margin-block-start: var(--spacing-lg);
+            padding: var(--spacing-md);
+            margin-top: var(--spacing-xl);
+            background: rgba(248, 113, 113, 0.08);
+            border: 1px solid rgba(248, 113, 113, 0.4);
+            border-radius: var(--radius-md);
+            color: var(--fg);
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .disclaimer strong {
+            color: #f87171;
         }
 
         .hero-content {
@@ -314,13 +329,18 @@
 <div class="hero-divider"></div>
 
 <section class="intro">
-    <p>
+    <p class="description">
         Полнофункциональная среда для изучения анализа данных, машинного обучения и работы с большими данными.
         Всё необходимое уже настроено и готово к работе — просто запустите Docker и начните экспериментировать.
     </p>
     <div class="cta">
         <a class="btn secondary" href="https://github.com/Inzhenerka/mydatalab" target="_blank" rel="noopener">📃 Инструкции и исходники</a>
     </div>
+    <p class="disclaimer">
+        <strong>Важно:</strong> My Data Lab это ваш локальный учебный стенд.
+        Для простоты в приложениях используются примитивные стандартные пароли.
+        Не пробрасывайте доступ к стенду из внешней сети и не открывайте порты в интернет — так вы сохраните свои данные и окружение в безопасности.
+    </p>
 </section>
 
 <div class="wrap">
