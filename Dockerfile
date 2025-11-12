@@ -22,8 +22,10 @@ RUN install -d -m 0755 /usr/local/spark/jars && \
 
 # Install the only native dependency MinIO server requires
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends liburing2 && \
+    apt-get install -y --no-install-recommends liburing2 supervisor && \
     rm -rf /var/lib/apt/lists/*
+
+RUN install -d /etc/supervisor
 
 # MinIO server binary
 RUN curl -fsSL "https://dl.min.io/server/minio/release/linux-amd64/archive/minio.RELEASE.${MINIO_SERVER_RELEASE}" -o /usr/local/bin/minio \
@@ -46,6 +48,7 @@ COPY --chown=$NB_UID:$NB_GID start /home/jovyan/start
 # Copy orchestration scripts that control all bundled services
 COPY start-mydatalab.sh /usr/local/bin/start-mydatalab.sh
 COPY scripts/*.sh /usr/local/bin/
+COPY supervisor/supervisord.conf /etc/supervisor/supervisord.conf
 RUN chmod +x /usr/local/bin/start-mydatalab.sh /usr/local/bin/start-*.sh
 
 # PostgreSQL runtime copied from the official postgres:18 image
@@ -77,7 +80,13 @@ ENV PATH="/usr/lib/postgresql/18/bin:${PATH}" \
     MINIO_ROOT_PASSWORD=minioadmin \
     MINIO_SERVER_ADDRESS=:9000 \
     MINIO_CONSOLE_ADDRESS=:9001 \
-    STATIC_PORT=1111
+    STATIC_PORT=1111 \
+    SUPERVISOR_CONFIG=/etc/supervisor/supervisord.conf \
+    SUPERVISOR_LOG_DIR=/home/jovyan/supervisor \
+    SUPERVISOR_RUN_DIR=/home/jovyan/supervisor \
+    SUPERVISOR_HTTP_ADDRESS=0.0.0.0:9010 \
+    SUPERVISOR_HTTP_USER=admin \
+    SUPERVISOR_HTTP_PASSWORD=admin
 
 # Ensure runtime directories exist for both PostgreSQL and initdb scripts
 RUN install -d -o $NB_UID -g $NB_GID \
@@ -87,7 +96,7 @@ RUN install -d -o $NB_UID -g $NB_GID \
       /docker-entrypoint-initdb.d
 
 # Publish all service ports out of the container
-EXPOSE 8888 9000 9001 5432 1111
+EXPOSE 8888 9000 9001 5432 1111 9010
 
 # Unified entrypoint that starts PostgreSQL, MinIO, the static page and Jupyter
 CMD ["/usr/local/bin/start-mydatalab.sh"]
