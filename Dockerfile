@@ -96,7 +96,7 @@ RUN install -d -o $NB_UID -g $NB_GID \
       /docker-entrypoint-initdb.d
 
 # Publish all service ports out of the container
-EXPOSE 8888 9000 9001 5432 1111 9010
+EXPOSE 8888 4040 9000 9001 5432 1111 9010
 
 # Unified entrypoint that starts PostgreSQL, MinIO, the static page and Jupyter
 CMD ["/usr/local/bin/start-mydatalab.sh"]
