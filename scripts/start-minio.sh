@@ -14,7 +14,7 @@ MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-minioadmin}
 MINIO_ALIAS=${MINIO_ALIAS:-local}
 MINIO_BUCKET=${MINIO_BUCKET:-edu-bucket}
 MINIO_DATA_DIR=${MINIO_DATA_DIR:-/data/minio}
-MINIO_LOG_FILE=${MINIO_LOG_FILE:-/home/jovyan/minio.log}
+MINIO_LOG_FILE=${MINIO_LOG_FILE:-${SUPERVISOR_LOG_DIR:-/srv/mydatalab/logs}/minio.log}
 
 log() {
   printf '[%s] [minio] %s\n' "$(date -Iseconds)" "$*" >&2

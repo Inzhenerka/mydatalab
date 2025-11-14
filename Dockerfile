@@ -36,6 +36,7 @@ RUN curl -fsSL "https://dl.min.io/client/mc/release/linux-amd64/archive/mc.RELEA
 
 # Prepare writable directories for the non-root notebook user
 RUN install -d -o $NB_UID -g $NB_GID /data/minio \
+    && install -d -o $NB_UID -g $NB_GID /srv/mydatalab/logs /srv/mydatalab/run \
     && install -d -o $NB_UID -g $NB_GID /home/jovyan/.jupyter/labconfig
 
 # Tweak the Jupyter landing page
@@ -57,8 +58,8 @@ ENV MINIO_ROOT_USER=minioadmin \
     MINIO_CONSOLE_ADDRESS=:9001 \
     STATIC_PORT=1111 \
     SUPERVISOR_CONFIG=/etc/supervisor/supervisord.conf \
-    SUPERVISOR_LOG_DIR=/home/jovyan/supervisor \
-    SUPERVISOR_RUN_DIR=/home/jovyan/supervisor \
+    SUPERVISOR_LOG_DIR=/srv/mydatalab/logs \
+    SUPERVISOR_RUN_DIR=/srv/mydatalab/run \
     SUPERVISOR_HTTP_ADDRESS=0.0.0.0:9010 \
     SUPERVISOR_HTTP_USER=admin \
     SUPERVISOR_HTTP_PASSWORD=admin
