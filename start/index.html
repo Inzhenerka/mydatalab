@@ -110,6 +110,9 @@
         }
 
         .disclaimer {
+            width: auto; /* центрируем блок по ширине контейнера */
+            max-width: 920px;
+            margin-inline: auto; /* горизонтальное центрирование */
             margin-block-start: var(--spacing-lg);
             padding: var(--spacing-md);
             margin-top: var(--spacing-xl);
@@ -119,6 +122,7 @@
             color: var(--fg);
             font-size: 0.875rem;
             line-height: 1.5;
+            text-align: center; /* выравниваем текст по центру */
         }
 
         .disclaimer strong {
@@ -295,6 +299,15 @@
             text-align: center;
         }
 
+        /* Ссылка в футере должна быть того же цвета, что и текст */
+        footer a,
+        footer a:visited,
+        footer a:hover,
+        footer a:active,
+        footer a:focus {
+            color: inherit;
+        }
+
         @media (max-width: 768px) {
             .hero-content {
                 flex-direction: column;
@@ -325,6 +338,139 @@
                 transition-duration: 0.01ms !important;
             }
         }
+
+        /* Quick start cheat sheet */
+        .quick-start {
+            padding-block: var(--spacing-2xl);
+            padding-inline: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .quick-start h2 {
+            margin: 0 0 var(--spacing-lg);
+            font-size: clamp(2rem, 6vw, 3rem);
+            font-weight: 700;
+            text-align: center;
+            color: var(--fg);
+        }
+
+        /* Services section title */
+        #services > h2 {
+            margin: var(--spacing-2xl) 0 var(--spacing-lg);
+            font-size: clamp(2rem, 6vw, 3rem);
+            font-weight: 700;
+            text-align: center;
+            color: var(--fg);
+        }
+
+        /* Trainers section */
+        .trainers {
+            padding-block: var(--spacing-2xl);
+            padding-inline: var(--spacing-lg);
+        }
+
+        /* Trainers section title */
+        #trainers > h2 {
+            margin: 0 0 var(--spacing-lg);
+            font-size: clamp(2rem, 6vw, 3rem);
+            font-weight: 700;
+            text-align: center;
+            color: var(--fg);
+        }
+
+        /* Trainers new layout */
+        .trainers-grid {
+            max-width: 920px;
+            margin-inline: auto;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: var(--spacing-sm);
+            align-items: center;
+        }
+
+        .trainers-illustration {
+            display: flex;
+            justify-content: center;
+        }
+
+        .trainers-illustration img {
+            max-width: 250px;
+            width: 100%;
+            height: auto;
+            border-radius: var(--radius-md);
+        }
+
+        .trainers-text p {
+            margin-top: 0;
+            color: var(--muted);
+            font-size: 1.0625rem;
+            line-height: 1.75;
+        }
+
+        .trainers .cta {
+            margin-top: var(--spacing-lg);
+        }
+
+        @media (max-width: 768px) {
+            .trainers-grid {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-lg);
+                text-align: center;
+            }
+        }
+
+        .qs-grid {
+            max-width: 920px;
+            margin-inline: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+        }
+
+        .qs-card {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color-light);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+        }
+
+        .qs-card h3 {
+            margin: 0 0 var(--spacing-md);
+            font-size: 1.125rem;
+        }
+
+        .qs-card p {
+            margin: 0 0 var(--spacing-md);
+            color: var(--muted);
+        }
+
+        .qs-list {
+            margin: 0 0 var(--spacing-md);
+            padding-left: 18px;
+            color: var(--muted);
+        }
+
+        /* Памятка: центрируем кнопку и делаем её немного компактнее только в этой секции */
+        .quick-start .qs-card .cta {
+            justify-content: center;
+        }
+
+        .quick-start .qs-card .btn {
+            font-size: 0.875rem; /* чуть меньше стандартной */
+            padding-inline: 16px;
+            padding-block: 8px;
+            min-height: 36px;
+        }
+
+        .quick-start > .cta {
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .qs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -347,23 +493,64 @@
 
 <section class="intro">
     <p class="description">
-        Полнофункциональная среда для изучения анализа данных, машинного обучения и работы с большими данными.
+        Полнофункциональная среда для изучения анализа данных и работы с большими данными.
         Всё необходимое уже настроено и готово к работе — просто запустите Docker и начните экспериментировать.
-    </p>
-    <div class="cta">
-        <a class="btn secondary" href="https://github.com/Inzhenerka/mydatalab" target="_blank" rel="noopener">📃
-            Инструкции и исходники</a>
-    </div>
-    <p class="disclaimer">
-        <strong>Важно:</strong> My Data Lab это ваш локальный учебный стенд.
-        Для простоты в приложениях используются примитивные стандартные пароли.
-        Не пробрасывайте доступ к стенду из внешней сети и не открывайте порты в интернет — так вы сохраните свои данные
-        и окружение в безопасности.
     </p>
 </section>
 
+
+<section class="quick-start" aria-labelledby="quick-start-title">
+    <h2 id="quick-start-title">Памятка на каждый день</h2>
+
+    <div class="qs-grid">
+        <div class="qs-card">
+            <h3>Начало работы</h3>
+            <p>
+                Запуск стенда из корня проекта. Готовый образ скачивается из интернета и запускается в фоне
+            </p>
+            <pre><code># Опционально: получение последней версии
+docker compose pull
+
+# Запуск в фоновом режиме
+docker compose up -d</code></pre>
+            <div class="cta">
+                <a class="btn primary" href="http://localhost:1888/lab" target="_blank" rel="noopener">🚀 Открыть
+                    JupyterLab</a>
+            </div>
+        </div>
+
+        <div class="qs-card">
+            <h3>Приостановка работы</h3>
+            <p>Остановка стенда из корня проекта, чтобы освободить ресурсы компьютера</p>
+            <pre><code># Остановка фонового контейнера
+docker compose stop</code></pre>
+        </div>
+    </div>
+
+
+    <div class="cta">
+        <a class="btn secondary" href="https://github.com/Inzhenerka/mydatalab" target="_blank" rel="noopener">
+            📃 Все инструкции в репозитории
+        </a>
+    </div>
+
+</section>
+
+
+<!-- Секция тренажёров будет показана в конце страницы перед футером -->
+
 <div class="wrap">
     <div class="sections" id="services">
+        <h2>Доступные сервисы</h2>
+
+        <p class="disclaimer">
+            <strong>Важно:</strong> My Data Lab это ваш локальный учебный стенд.
+            Для простоты в приложениях используются примитивные стандартные пароли.
+            Не пробрасывайте доступ к стенду из внешней сети и не открывайте порты в интернет — так вы сохраните свои
+            данные
+            и окружение в безопасности.
+        </p>
+
         <section class="mini" id="jupyter">
             <h3>
                 <img class="icon" src="assets/jupyter.svg" alt="" width="48" height="48" loading="lazy">
@@ -378,7 +565,7 @@
             </p>
 
             <div class="cta">
-                <a class="btn primary" href="http://localhost:8888/lab" target="_blank">🚀 Открыть JupyterLab</a>
+                <a class="btn primary" href="http://localhost:1888/lab" target="_blank">🚀 Открыть JupyterLab</a>
                 <a class="btn secondary" href="https://jupyterlab.readthedocs.io/" target="_blank" rel="noopener">📚
                     Документация</a>
             </div>
@@ -443,12 +630,15 @@
             </p>
 
             <div class="cta">
-                <a class="btn primary" href="http://localhost:8181" target="_blank" rel="noopener">🌊 Открыть
-                    Lakekeeper</a>
-                <a class="btn secondary" href="http://localhost:8181/swagger-ui/#/" target="_blank" rel="noopener">🧭
-                    Swagger UI</a>
-                <a class="btn secondary" href="https://docs.lakekeeper.io" target="_blank" rel="noopener">📚
-                    Документация</a>
+                <a class="btn primary" href="http://localhost:8181" target="_blank" rel="noopener">
+                    🌊 Каталог Lakekeeper
+                </a>
+                <a class="btn secondary" href="http://localhost:8181/swagger-ui/#/" target="_blank" rel="noopener">
+                    🧭 Swagger UI
+                </a>
+                <a class="btn secondary" href="https://docs.lakekeeper.io" target="_blank" rel="noopener">
+                    📚 Документация
+                </a>
             </div>
 
             <div class="service-meta">
@@ -541,8 +731,32 @@ spark.sql.catalog.lk.s3.secret-access-key=minioadmin</code></pre>
         </section>
     </div>
 
+    <section class="trainers" id="trainers" aria-labelledby="trainers-title">
+        <h2 id="trainers-title">Тренажёры по работе с данными</h2>
+        <div class="trainers-grid">
+            <div class="trainers-illustration">
+                <img src="assets/doudou.png" alt="Иллюстрация к тренажёрам по работе с данными" width="961" height="948"
+                     loading="lazy">
+            </div>
+            <div class="trainers-text">
+                <p>
+                    Прокачайте навыки работы с данными на практических тренажёрах от Инженерки: Python, SQL, ETL,
+                    оркестрация и аналитическое моделирование. Учитесь на реальных бизнес-кейсах и выполняйте сложные
+                    задачи без долгой настройки окружения.
+                </p>
+                <div class="cta">
+                    <a class="btn primary" href="https://inzhenerka.tech/working-with-data" target="_blank"
+                       rel="noopener">
+                        👀 Ознакомиться
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <footer>
-        © 2025 My Data Lab by Inzhenerka.Tech
+        © 2025 <a href="https://github.com/Inzhenerka/mydatalab" target="_blank" rel="noopener">My Data Lab</a> by <a
+            href="https://inzhenerka.tech" target="_blank" rel="noopener">Inzhenerka.Tech</a>
     </footer>
 </div>
 </body>

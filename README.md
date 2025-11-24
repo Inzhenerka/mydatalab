@@ -1,30 +1,31 @@
 # My Data Lab
 
-Набор инструментов и окружение для локального запуска учебной лаборатории данных.
+Локальная лаборатория данных с PySpark, Jupyter, MinIO (S3), Lakekeeper (Iceberg REST), PostgreSQL и Supervisor UI.
 
-## Возможности
+## Быстрый старт с нуля
+```bash
+git clone https://github.com/Inzhenerka/mydatalab
+cd mydatalab
+docker compose pull         # подтянуть готовый образ (быстрее первого запуска)
+docker compose up           # собрать при необходимости и запустить все сервисы
+```
 
-- PySpark для обработки данных
-- Jupyter/ноутбуки для экспериментов
-- Локальный MinIO для хранения данных (S3 API)
-- Lakekeeper — REST-каталог Iceberg с UI, использует PostgreSQL и MinIO
-- PostgreSQL 18 в качестве базы данных
-- Supervisord с веб-интерфейсом для контроля фоновых сервисов
-- Быстрый старт через Docker Compose
+Что открывать:
+- Лендинг и ссылки на сервисы: http://localhost:1111
+- Jupyter Lab: http://localhost:8888 (токен пустой)
+- Lakekeeper UI / Swagger: http://localhost:8181 и http://localhost:8181/swagger-ui/#/
+- Supervisor UI: http://localhost:9010 (admin / admin)
 
-## Быстрый старт
+## Продолжить работу после первой установки
+```bash
+cd mydatalab
+docker compose up           # поднимет контейнер с сохранёнными данными
+```
 
-1. Установите Docker и Docker Compose.
-2. Клонируйте репозиторий:
-   ```bash
-   git clone https://github.com/Inzhenerka/mydatalab
-   cd mydatalab
-   ```
-3. Запустите контейнер:
-   ```bash
-   docker compose pull
-   docker compose up
-   ```
-4. Откройте в браузере стартовую страницу с описанием всех сервисов: http://localhost:1111
-5. Каталог Iceberg и UI Lakekeeper доступны на http://localhost:8181 (Swagger: http://localhost:8181/swagger-ui/#/)
-6. Следите за состоянием процессов и управляйте ими через Supervisord: http://localhost:9010 (логин `admin`, пароль `admin`)
+## Поставить на паузу или остановить
+- Временная пауза, чтобы оставить данные: `docker compose stop`
+- Полностью остановить и удалить контейнер (данные в примонтированных папках сохранятся): `docker compose down`
+
+## Обновление окружения
+- Подтянуть свежий образ без пересборки: `docker compose pull`
+- Пересобрать после изменений в Dockerfile: `docker compose build`

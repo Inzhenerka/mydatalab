@@ -6,7 +6,7 @@ services:
     image: ghcr.io/inzhenerka/mydatalab:latest
     container_name: mydatalab
     ports:
-      - "8888:8888" # Jupyter
+      - "1888:8888" # Jupyter
       - "4040:4040" # Spark UI
       - "9000:9000" # MinIO API
       - "9001:9001" # MinIO Console
