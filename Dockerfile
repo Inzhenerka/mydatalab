@@ -7,6 +7,9 @@ FROM quay.io/jupyter/pyspark-notebook:spark-4.0.1
 # Version switches for the components we download at build time
 ARG HADOOP_AWS_VERSION=3.4.1
 ARG AWS_BUNDLE_VERSION=2.37.3
+ARG ICEBERG_VERSION=1.10.0
+ARG ICEBERG_SPARK_VERSION=4.0
+ARG ICEBERG_SCALA_VERSION=2.13
 ARG MINIO_SERVER_RELEASE=2025-09-07T16-13-09Z
 ARG MINIO_CLIENT_RELEASE=2025-08-13T08-35-41Z
 ARG LAKEKEEPER_VERSION=0.10.4
@@ -20,7 +23,11 @@ RUN install -d -m 0755 /usr/local/spark/jars && \
     curl -fsSL "https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/${HADOOP_AWS_VERSION}/hadoop-aws-${HADOOP_AWS_VERSION}.jar" \
       -o /usr/local/spark/jars/hadoop-aws-${HADOOP_AWS_VERSION}.jar && \
     curl -fsSL "https://repo1.maven.org/maven2/software/amazon/awssdk/bundle/${AWS_BUNDLE_VERSION}/bundle-${AWS_BUNDLE_VERSION}.jar" \
-      -o /usr/local/spark/jars/bundle-${AWS_BUNDLE_VERSION}.jar
+      -o /usr/local/spark/jars/bundle-${AWS_BUNDLE_VERSION}.jar && \
+    curl -fsSL "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-spark-runtime-${ICEBERG_SPARK_VERSION}_${ICEBERG_SCALA_VERSION}/${ICEBERG_VERSION}/iceberg-spark-runtime-${ICEBERG_SPARK_VERSION}_${ICEBERG_SCALA_VERSION}-${ICEBERG_VERSION}.jar" \
+      -o /usr/local/spark/jars/iceberg-spark-runtime-${ICEBERG_SPARK_VERSION}_${ICEBERG_SCALA_VERSION}-${ICEBERG_VERSION}.jar && \
+    curl -fsSL "https://repo1.maven.org/maven2/org/apache/iceberg/iceberg-aws-bundle/${ICEBERG_VERSION}/iceberg-aws-bundle-${ICEBERG_VERSION}.jar" \
+      -o /usr/local/spark/jars/iceberg-aws-bundle-${ICEBERG_VERSION}.jar
 
 # Install the only native dependency MinIO server requires
 RUN apt-get update && \

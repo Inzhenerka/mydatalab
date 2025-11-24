@@ -9,7 +9,7 @@
             --bg: #0f172a;
             --fg: #e2e8f0;
             --muted: #94a3b8;
-            --accent: #0ea5e9;
+            --accent: #11aaef;
             --accent-dark: #0c4a6e;
             --border-color: rgba(148, 163, 184, 0.2);
             --border-color-light: rgba(148, 163, 184, 0.15);
@@ -351,12 +351,14 @@
         Всё необходимое уже настроено и готово к работе — просто запустите Docker и начните экспериментировать.
     </p>
     <div class="cta">
-        <a class="btn secondary" href="https://github.com/Inzhenerka/mydatalab" target="_blank" rel="noopener">📃 Инструкции и исходники</a>
+        <a class="btn secondary" href="https://github.com/Inzhenerka/mydatalab" target="_blank" rel="noopener">📃
+            Инструкции и исходники</a>
     </div>
     <p class="disclaimer">
         <strong>Важно:</strong> My Data Lab это ваш локальный учебный стенд.
         Для простоты в приложениях используются примитивные стандартные пароли.
-        Не пробрасывайте доступ к стенду из внешней сети и не открывайте порты в интернет — так вы сохраните свои данные и окружение в безопасности.
+        Не пробрасывайте доступ к стенду из внешней сети и не открывайте порты в интернет — так вы сохраните свои данные
+        и окружение в безопасности.
     </p>
 </section>
 
@@ -367,9 +369,13 @@
                 <img class="icon" src="assets/jupyter.svg" alt="" width="48" height="48" loading="lazy">
                 JupyterLab
             </h3>
-            <p>Интерактивная среда для экспериментов с данными и кодом на Python. Создавайте и запускайте ноутбуки,
+            <p>
+                Интерактивная среда для экспериментов с данными и кодом на Python. Создавайте и запускайте ноутбуки,
                 редактируйте файлы, работайте с терминалом — всё в одном месте. Идеально подходит для анализа данных,
-                прототипирования и обучения.</p>
+                прототипирования и обучения.
+                <br><br>
+                Обеспечивает доступ к остальным сервисами через Python.
+            </p>
 
             <div class="cta">
                 <a class="btn primary" href="http://localhost:8888/lab" target="_blank">🚀 Открыть JupyterLab</a>
@@ -399,9 +405,12 @@
                 <img class="icon" src="assets/minio.png" alt="" width="48" height="48" loading="lazy">
                 MinIO Object Storage
             </h3>
-            <p>Локальное объектное хранилище с S3-совместимым API. Храните датасеты, результаты обработки и любые файлы.
+            <p>
+                Локальное объектное хранилище с S3-совместимым API. Храните датасеты, результаты обработки и любые
+                файлы.
                 Управляйте данными через веб-интерфейс или подключайтесь программно из Python, используя стандартные
-                S3-клиенты.</p>
+                S3-клиенты или Spark.
+            </p>
 
             <div class="cta">
                 <a class="btn primary" href="http://localhost:9001" target="_blank" rel="noopener">🎛️ MinIO Console</a>
@@ -428,15 +437,18 @@
                 <img class="icon" src="assets/lakekeeper.svg" alt="" width="48" height="48" loading="lazy">
                 Lakekeeper — Iceberg REST Catalog
             </h3>
-            <p>Каталог Iceberg, развернутый внутри стенда и уже связанный с PostgreSQL (метаданные) и MinIO (объекты).
-                Позволяет управлять warehouse, пространствами и таблицами через REST API, web-интерфейс и Swagger.</p>
-            <p>Lakekeeper стартует без аутентификации, но использует шифрование секрета в PostgreSQL — не пробрасывайте его
-                в открытый интернет.</p>
+            <p>Каталог данных Iceberg, связанный с MinIO S3 (хранилище объектов) и PostgreSQL (база для метаданных).
+                Позволяет управлять данными, пространствами и таблицами через REST API, web-интерфейс и Swagger.
+                Имеет в комплекте библиотеку для Spark.
+            </p>
 
             <div class="cta">
-                <a class="btn primary" href="http://localhost:8181" target="_blank" rel="noopener">🌊 Открыть Lakekeeper</a>
-                <a class="btn secondary" href="http://localhost:8181/swagger-ui/#/" target="_blank" rel="noopener">🧭 Swagger UI</a>
-                <a class="btn secondary" href="https://docs.lakekeeper.io" target="_blank" rel="noopener">📚 Документация</a>
+                <a class="btn primary" href="http://localhost:8181" target="_blank" rel="noopener">🌊 Открыть
+                    Lakekeeper</a>
+                <a class="btn secondary" href="http://localhost:8181/swagger-ui/#/" target="_blank" rel="noopener">🧭
+                    Swagger UI</a>
+                <a class="btn secondary" href="https://docs.lakekeeper.io" target="_blank" rel="noopener">📚
+                    Документация</a>
             </div>
 
             <div class="service-meta">
@@ -471,13 +483,15 @@ spark.sql.catalog.lk.s3.secret-access-key=minioadmin</code></pre>
                 <img class="icon" src="assets/postgres.svg" alt="" width="48" height="48" loading="lazy">
                 PostgreSQL 18
             </h3>
-            <p>Предустановленная реляционная база данных для хранения учебных датасетов, промежуточных результатов и
-                артефактов экспериментов. Подключайтесь из Jupyter ноутбуков, BI-инструментов или любых SQL-клиентов —
-                сервис уже запущен и проброшен на хост.</p>
+            <p>
+                Предустановленная реляционная база данных для хранения учебных датасетов, промежуточных результатов и
+                артефактов экспериментов. Подключайтесь из Jupyter ноутбуков, BI-инструментов или любых SQL-клиентов.
+            </p>
 
             <div class="cta">
                 <a class="btn secondary" href="https://www.postgresql.org/docs/current/" target="_blank" rel="noopener">📚
-                    Документация</a>
+                    Документация
+                </a>
             </div>
 
             <div class="service-meta">
@@ -511,8 +525,10 @@ spark.sql.catalog.lk.s3.secret-access-key=minioadmin</code></pre>
                 отдельные компоненты.</p>
 
             <div class="cta">
-                <a class="btn primary" href="http://localhost:9010" target="_blank" rel="noopener">🖥️ Панель Supervisord</a>
-                <a class="btn secondary" href="http://supervisord.org/" target="_blank" rel="noopener">📚 Документация</a>
+                <a class="btn primary" href="http://localhost:9010" target="_blank" rel="noopener">🖥️ Панель
+                    Supervisord</a>
+                <a class="btn secondary" href="http://supervisord.org/" target="_blank" rel="noopener">📚
+                    Документация</a>
             </div>
 
             <div class="service-meta">
