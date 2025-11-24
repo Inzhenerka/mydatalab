@@ -57,6 +57,23 @@
             display: block;
         }
 
+        pre {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color-light);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        pre code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            display: block;
+            color: var(--fg);
+            white-space: pre-wrap;
+        }
+
         .wrap {
             width: 100%;
             max-width: 920px;
@@ -355,7 +372,7 @@
                 прототипирования и обучения.</p>
 
             <div class="cta">
-                <a class="btn primary" href="http://localhost:8888/lab">🚀 Открыть JupyterLab</a>
+                <a class="btn primary" href="http://localhost:8888/lab" target="_blank">🚀 Открыть JupyterLab</a>
                 <a class="btn secondary" href="https://jupyterlab.readthedocs.io/" target="_blank" rel="noopener">📚
                     Документация</a>
             </div>
@@ -371,7 +388,7 @@
                 интегрирован с JupyterLab.</p>
             <p><b>Важно:</b> Чтобы Spark UI стал доступен, надо сначала запустить любой скрипт PySpark в JupyterLab</p>
             <div class="cta">
-                <a class="btn primary" href="http://localhost:4040/">✨ Spark UI</a>
+                <a class="btn primary" href="http://localhost:4040/" target="_blank">✨ Spark UI</a>
                 <a class="btn secondary" href="https://spark.apache.org/docs/latest/api/python/" target="_blank"
                    rel="noopener">📚 Документация</a>
             </div>
