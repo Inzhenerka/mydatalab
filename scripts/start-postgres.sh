@@ -8,7 +8,7 @@ if [[ ${1:-} == "--foreground" ]]; then
 fi
 
 POSTGRES_DATA_DIR=${POSTGRES_DATA_DIR:-${PGDATA:-/home/jovyan/postgres-data/data}}
-POSTGRES_LOG_FILE=${POSTGRES_LOG_FILE:-$(dirname "$POSTGRES_DATA_DIR")/postgres.log}
+POSTGRES_LOG_FILE=${POSTGRES_LOG_FILE:-${SUPERVISOR_LOG_DIR:-/srv/mydatalab/logs}/postgres.log}
 POSTGRES_ENTRYPOINT=${POSTGRES_ENTRYPOINT:-/usr/local/bin/docker-entrypoint.sh}
 POSTGRES_LISTEN_ADDRESSES=${POSTGRES_LISTEN_ADDRESSES:-*}
 POSTGRES_LOG_TAIL_LINES=${POSTGRES_LOG_TAIL_LINES:-200}
