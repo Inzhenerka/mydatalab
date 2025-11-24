@@ -10,14 +10,11 @@ SUPERVISOR_RUN_DIR=${SUPERVISOR_RUN_DIR:-/srv/mydatalab/run}
 SUPERVISOR_HTTP_ADDRESS=${SUPERVISOR_HTTP_ADDRESS:-0.0.0.0:9010}
 SUPERVISOR_HTTP_USER=${SUPERVISOR_HTTP_USER:-admin}
 SUPERVISOR_HTTP_PASSWORD=${SUPERVISOR_HTTP_PASSWORD:-admin}
+GRAVITINO_DATA_DIR=${GRAVITINO_DATA_DIR:-/srv/gravitino}
 
-if [ "$(id -u)" -eq 0 ]; then
-  NB_UID=${NB_UID:-1000}
-  NB_GID=${NB_GID:-100}
-  mkdir -p "$SUPERVISOR_LOG_DIR" "$SUPERVISOR_RUN_DIR"
-  chown -R "$NB_UID:$NB_GID" "$SUPERVISOR_LOG_DIR" "$SUPERVISOR_RUN_DIR"
-  exec gosu "$NB_UID:$NB_GID" "$0" "$@"
-fi
+# Просто убеждаемся, что каталоги существуют. Права менять не пытаемся —
+# на Windows/NTFS это всё равно часто запрещено.
+mkdir -p "$SUPERVISOR_LOG_DIR" "$SUPERVISOR_RUN_DIR" "$GRAVITINO_DATA_DIR"
 
 required_vars=(MINIO_ROOT_USER MINIO_ROOT_PASSWORD)
 for var in "${required_vars[@]}"; do

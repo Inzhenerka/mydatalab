@@ -269,6 +269,23 @@
             margin-inline-end: 4px;
         }
 
+        pre {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color-light);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        pre code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            display: block;
+            color: var(--fg);
+            white-space: pre-wrap;
+        }
+
         footer {
             margin-block-start: var(--spacing-3xl);
             padding-block-start: var(--spacing-lg);
@@ -403,6 +420,42 @@
                 <p>
                     <code class="badge">http://localhost:9000</code>
                 </p>
+            </div>
+        </section>
+
+        <section class="mini" id="gravitino">
+            <h3>
+                <img class="icon" src="assets/gravitino.svg" alt="" width="48" height="48" loading="lazy">
+                Apache Gravitino
+            </h3>
+            <p>Gravitino — центральная мета-платформа с веб-интерфейсом и Iceberg REST API. Внутри My Data Lab она
+                подключена к MinIO и предоставляет готовый каталог Iceberg, которым можно управлять через UI и
+                использовать из Spark/Flink.</p>
+
+            <div class="cta">
+                <a class="btn primary" href="http://localhost:8090" target="_blank" rel="noopener">🌐 Открыть Gravitino UI</a>
+                <a class="btn secondary" href="http://localhost:8181/mydatalab/namespaces" target="_blank" rel="noopener">🧊
+                    Проверить REST API</a>
+                <a class="btn secondary" href="https://gravitino.apache.org/docs/latest/" target="_blank"
+                   rel="noopener">📚 Документация</a>
+            </div>
+
+            <div class="service-meta">
+                <p><strong>⚙️ Настройки:</strong></p>
+                <p>
+                    <code class="badge">UI: http://localhost:8090</code>
+                    <code class="badge">REST: http://localhost:8181</code>
+                    <code class="badge">Catalog: mydatalab</code>
+                    <code class="badge">Warehouse: s3://mydatalab/warehouse</code>
+                </p>
+                <p>Конфигурация Gravitino уже настроена внутри контейнера, поэтому вручную менять файлы не нужно.</p>
+                <p><strong>🔌 Spark пример:</strong></p>
+                <pre><code>spark.sql.extensions=org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
+spark.sql.catalog.mydatalab=org.apache.iceberg.spark.SparkCatalog
+spark.sql.catalog.mydatalab.catalog-impl=org.apache.iceberg.rest.RESTCatalog
+spark.sql.catalog.mydatalab.uri=http://localhost:8181/mydatalab
+spark.sql.catalog.mydatalab.warehouse=s3://mydatalab/warehouse
+spark.sql.catalog.mydatalab.s3.endpoint=http://127.0.0.1:9000</code></pre>
             </div>
         </section>
 
