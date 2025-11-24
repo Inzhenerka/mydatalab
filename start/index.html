@@ -423,6 +423,49 @@
             </div>
         </section>
 
+        <section class="mini" id="lakekeeper">
+            <h3>
+                <img class="icon" src="assets/lakekeeper.svg" alt="" width="48" height="48" loading="lazy">
+                Lakekeeper — Iceberg REST Catalog
+            </h3>
+            <p>Каталог Iceberg, развернутый внутри стенда и уже связанный с PostgreSQL (метаданные) и MinIO (объекты).
+                Позволяет управлять warehouse, пространствами и таблицами через REST API, web-интерфейс и Swagger.</p>
+            <p>Lakekeeper стартует без аутентификации, но использует шифрование секрета в PostgreSQL — не пробрасывайте его
+                в открытый интернет.</p>
+
+            <div class="cta">
+                <a class="btn primary" href="http://localhost:8181" target="_blank" rel="noopener">🌊 Открыть Lakekeeper</a>
+                <a class="btn secondary" href="http://localhost:8181/swagger-ui/#/" target="_blank" rel="noopener">🧭 Swagger UI</a>
+                <a class="btn secondary" href="https://docs.lakekeeper.io" target="_blank" rel="noopener">📚 Документация</a>
+            </div>
+
+            <div class="service-meta">
+                <p><strong>🔌 Точки доступа:</strong></p>
+                <p>
+                    <code class="badge">UI: http://localhost:8181</code>
+                    <code class="badge">REST: http://localhost:8181/catalog</code>
+                </p>
+
+                <p><strong>📦 Warehouse по умолчанию:</strong></p>
+                <p>
+                    <code class="badge">Название: mydatalab</code>
+                    <code class="badge">Путь: s3://mydatalab/warehouse</code>
+                </p>
+
+                <p><strong>⚙️ Подключение из Spark:</strong></p>
+                <pre><code>spark.sql.catalog.lk=org.apache.iceberg.spark.SparkCatalog
+spark.sql.catalog.lk.type=rest
+spark.sql.catalog.lk.uri=http://127.0.0.1:8181/catalog
+spark.sql.catalog.lk.warehouse=mydatalab
+spark.sql.extensions=org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
+spark.sql.catalog.lk.io-impl=org.apache.iceberg.aws.s3.S3FileIO
+spark.sql.catalog.lk.s3.endpoint=http://127.0.0.1:9000
+spark.sql.catalog.lk.s3.path-style-access=true
+spark.sql.catalog.lk.s3.access-key-id=minioadmin
+spark.sql.catalog.lk.s3.secret-access-key=minioadmin</code></pre>
+            </div>
+        </section>
+
         <section class="mini" id="postgresql">
             <h3>
                 <img class="icon" src="assets/postgres.svg" alt="" width="48" height="48" loading="lazy">

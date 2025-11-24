@@ -9,6 +9,8 @@ ARG HADOOP_AWS_VERSION=3.4.1
 ARG AWS_BUNDLE_VERSION=2.37.3
 ARG MINIO_SERVER_RELEASE=2025-09-07T16-13-09Z
 ARG MINIO_CLIENT_RELEASE=2025-08-13T08-35-41Z
+ARG LAKEKEEPER_VERSION=0.10.4
+ARG LAKEKEEPER_ARCHIVE=lakekeeper-x86_64-unknown-linux-gnu.tar.gz
 
 USER root
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -35,6 +37,13 @@ RUN curl -fsSL "https://dl.min.io/server/minio/release/linux-amd64/archive/minio
 RUN curl -fsSL "https://dl.min.io/client/mc/release/linux-amd64/archive/mc.RELEASE.${MINIO_CLIENT_RELEASE}" -o /usr/local/bin/mc \
     && chmod +x /usr/local/bin/mc
 
+# Lakekeeper binary (Iceberg REST catalog)
+RUN curl -fsSL "https://github.com/lakekeeper/lakekeeper/releases/download/v${LAKEKEEPER_VERSION}/${LAKEKEEPER_ARCHIVE}" \
+      -o "/tmp/${LAKEKEEPER_ARCHIVE}" \
+    && tar -xzf "/tmp/${LAKEKEEPER_ARCHIVE}" -C /usr/local/bin \
+    && rm "/tmp/${LAKEKEEPER_ARCHIVE}" \
+    && chmod +x /usr/local/bin/lakekeeper
+
 # Prepare writable directories for the non-root notebook user
 RUN install -d -o $NB_UID -g $NB_GID /data/minio \
     && install -d -o $NB_UID -g $NB_GID /srv/mydatalab/logs /srv/mydatalab/run \
@@ -57,6 +66,8 @@ COPY --from=postgres-src /usr/lib/postgresql /usr/lib/postgresql
 COPY --from=postgres-src /usr/share/postgresql /usr/share/postgresql
 COPY --from=postgres-src /usr/lib/x86_64-linux-gnu/libpq.so* /usr/lib/x86_64-linux-gnu/
 COPY --from=postgres-src /usr/lib/x86_64-linux-gnu/libicu*.so* /usr/lib/x86_64-linux-gnu/
+COPY --from=postgres-src /usr/lib/x86_64-linux-gnu/libssl.so* /usr/lib/x86_64-linux-gnu/
+COPY --from=postgres-src /usr/lib/x86_64-linux-gnu/libcrypto.so* /usr/lib/x86_64-linux-gnu/
 COPY --from=postgres-src /etc/postgresql /etc/postgresql
 COPY --from=postgres-src /usr/local/bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY --from=postgres-src /usr/local/bin/gosu /usr/local/bin/gosu
@@ -87,7 +98,19 @@ ENV PATH="/usr/lib/postgresql/18/bin:${PATH}" \
     SUPERVISOR_RUN_DIR=/srv/mydatalab/run \
     SUPERVISOR_HTTP_ADDRESS=0.0.0.0:9010 \
     SUPERVISOR_HTTP_USER=admin \
-    SUPERVISOR_HTTP_PASSWORD=admin
+    SUPERVISOR_HTTP_PASSWORD=admin \
+    LAKEKEEPER_PORT=8181 \
+    LAKEKEEPER_METRICS_PORT=19100 \
+    LAKEKEEPER_DATABASE=lakekeeper \
+    LAKEKEEPER_ENCRYPTION_KEY=mydatalab-secret-key \
+    LAKEKEEPER_WAREHOUSE=mydatalab \
+    LAKEKEEPER_WAREHOUSE_PREFIX=warehouse \
+    LAKEKEEPER_WAREHOUSE_REGION=local-01 \
+    LAKEKEEPER_BOOTSTRAP_PROJECT=00000000-0000-0000-0000-000000000000 \
+    LAKEKEEPER_RUST_LOG=info \
+    LAKEKEEPER_STORAGE_FLAVOR=minio \
+    LAKEKEEPER_STORAGE_STS_ENABLED=true \
+    LAKEKEEPER_BIND_IP=0.0.0.0
 
 # Ensure runtime directories exist for both PostgreSQL and initdb scripts
 RUN install -d -o $NB_UID -g $NB_GID \
@@ -97,7 +120,7 @@ RUN install -d -o $NB_UID -g $NB_GID \
       /docker-entrypoint-initdb.d
 
 # Publish all service ports out of the container
-EXPOSE 8888 4040 9000 9001 5432 1111 9010
+EXPOSE 8888 4040 9000 9001 8181 5432 1111 9010
 
 # Unified entrypoint that starts PostgreSQL, MinIO, the static page and Jupyter
 CMD ["/usr/local/bin/start-mydatalab.sh"]
