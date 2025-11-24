@@ -423,6 +423,41 @@
             </div>
         </section>
 
+        <section class="mini" id="postgresql">
+            <h3>
+                <img class="icon" src="assets/postgres.svg" alt="" width="48" height="48" loading="lazy">
+                PostgreSQL 18
+            </h3>
+            <p>Предустановленная реляционная база данных для хранения учебных датасетов, промежуточных результатов и
+                артефактов экспериментов. Подключайтесь из Jupyter ноутбуков, BI-инструментов или любых SQL-клиентов —
+                сервис уже запущен и проброшен на хост.</p>
+
+            <div class="cta">
+                <a class="btn secondary" href="https://www.postgresql.org/docs/current/" target="_blank" rel="noopener">📚
+                    Документация</a>
+            </div>
+
+            <div class="service-meta">
+                <p><strong>🔐 Учётные данные:</strong></p>
+                <p>
+                    <code class="badge">User: postgres</code>
+                    <code class="badge">Password: postgres</code>
+                    <code class="badge">DB: postgres</code>
+                </p>
+
+                <p><strong>🔌 Подключение с хоста:</strong></p>
+                <p>
+                    <code class="badge">localhost:6432</code>
+                    <code class="badge">postgresql://postgres:postgres@localhost:6432/postgres</code>
+                </p>
+
+                <p><strong>💡 Пример:</strong></p>
+                <p>
+                    <code class="badge">psql -h localhost -p 6432 -U postgres</code>
+                </p>
+            </div>
+        </section>
+
         <section class="mini" id="supervisor">
             <h3>
                 <img class="icon" src="assets/supervisor.png" alt="" width="48" height="48" loading="lazy">

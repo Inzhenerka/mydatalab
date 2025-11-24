@@ -12,8 +12,10 @@ services:
       - "9001:9001" # MinIO Console
       - "1111:1111" # Landing page
       - "9010:9010" # Supervisor UI
+      - "6432:5432" # PostgreSQL
     volumes:
       - ./notebooks/iceberg:/home/jovyan/iceberg
       - ./jupyter-work:/home/jovyan/work
       - ./minio-data:/data/minio
+      - ./postgres-data:/home/jovyan/postgres-data:Z
     restart: no
