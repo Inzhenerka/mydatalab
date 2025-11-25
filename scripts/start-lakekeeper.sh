@@ -25,6 +25,7 @@ LAKEKEEPER_WAREHOUSE_REGION=${LAKEKEEPER_WAREHOUSE_REGION:-local-01}
 LAKEKEEPER_BOOTSTRAP_PROJECT=${LAKEKEEPER_BOOTSTRAP_PROJECT:-00000000-0000-0000-0000-000000000000}
 LAKEKEEPER_STORAGE_FLAVOR=${LAKEKEEPER_STORAGE_FLAVOR:-minio}
 LAKEKEEPER_STORAGE_STS_ENABLED=${LAKEKEEPER_STORAGE_STS_ENABLED:-true}
+LAKEKEEPER_BOOTSTRAP_SKIP_CHECK=${LAKEKEEPER_BOOTSTRAP_SKIP_CHECK:-false}
 
 POSTGRES_HOST=${POSTGRES_HOST:-127.0.0.1}
 POSTGRES_PORT=${POSTGRES_PORT:-5432}
@@ -97,9 +98,28 @@ is_success_status() {
   esac
 }
 
+is_bootstrapped() {
+  local api="http://127.0.0.1:${LAKEKEEPER_PORT}"
+  local info
+  info=$(curl -fsS --max-time 2 "${api}/management/v1/info" 2>/dev/null || true)
+  [[ $info == *'"bootstrapped":true'* ]]
+}
+
+warehouse_exists() {
+  local api="http://127.0.0.1:${LAKEKEEPER_PORT}"
+  local resp
+  resp=$(curl -fsS --max-time 2 "${api}/management/v1/warehouse" 2>/dev/null || true)
+  [[ $resp == *"\"name\":\"${LAKEKEEPER_WAREHOUSE}\""* ]]
+}
+
 bootstrap_lakekeeper() {
   local api="http://127.0.0.1:${LAKEKEEPER_PORT}"
   local status attempts=$LAKEKEEPER_BOOTSTRAP_RETRIES
+
+  if [[ ${LAKEKEEPER_BOOTSTRAP_SKIP_CHECK,,} != "true" ]] && is_bootstrapped; then
+    log "Catalog already bootstrapped; skipping bootstrap request"
+    return 0
+  fi
 
   while ((attempts--)); do
     status=$(curl -s -o /dev/null -w "%{http_code}" -X POST "${api}/management/v1/bootstrap" \
@@ -108,6 +128,11 @@ bootstrap_lakekeeper() {
 
     if is_success_status "$status"; then
       log "Bootstrap request completed with status ${status}"
+      return 0
+    fi
+
+    if [[ $status == "400" ]] && is_bootstrapped; then
+      log "Bootstrap not required (server reports bootstrapped)"
       return 0
     fi
 
@@ -127,6 +152,11 @@ create_default_warehouse() {
   [[ -z $sts ]] && sts=true
 
   local status attempts=$LAKEKEEPER_BOOTSTRAP_RETRIES
+
+  if warehouse_exists; then
+    log "Warehouse ${LAKEKEEPER_WAREHOUSE} already exists; skipping bootstrap"
+    return 0
+  fi
 
   while ((attempts--)); do
     status=$(
@@ -159,6 +189,11 @@ JSON
 
     if is_success_status "$status"; then
       log "Warehouse bootstrap completed with status ${status}"
+      return 0
+    fi
+
+    if [[ $status == "400" ]] && warehouse_exists; then
+      log "Warehouse already present; skipping bootstrap"
       return 0
     fi
 
@@ -216,6 +251,10 @@ stop_lakekeeper() {
     kill -TERM "$lakekeeper_pid" >/dev/null 2>&1 || true
   fi
 }
+
+if (( FOREGROUND )); then
+  trap stop_lakekeeper EXIT
+fi
 
 if [[ -n ${LAKEKEEPER__PG_DATABASE_URL_WRITE:-} ]]; then
   log "Using custom PostgreSQL connection string; skipping local readiness checks"

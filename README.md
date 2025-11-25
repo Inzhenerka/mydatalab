@@ -38,25 +38,39 @@ docker compose up
 
 **Начните работу с главной страницы: http://localhost:1111**
 
-- Jupyter Lab: http://localhost:1888 (токен пустой)
-- Lakekeeper UI / Swagger: http://localhost:8181 и http://localhost:8181/swagger-ui/#/
-- Supervisor UI: http://localhost:9010 (admin / admin)
-
 ## Продолжить работу после первой установки
+
+Поднять контейнер в фоне, чтобы не держать терминал занятым:
+
 ```bash
 cd mydatalab
-docker compose up           # поднимет контейнер с сохранёнными данными
+docker compose up -d
 ```
 
-## Поставить на паузу или остановить
-- Временная пауза, чтобы оставить данные: `docker compose stop`
-- Полностью остановить и удалить контейнер (данные в примонтированных папках сохранятся): `docker compose down`
+## Поставить на паузу
 
-## Где лежат данные сервисов
-- MinIO и PostgreSQL используют подмонтированные папки `service-data/minio` и `service-data/postgres` (сама `service-data` в .gitignore, в репозитории только `service-data/.gitkeep`).
-- Рабочие файлы Jupyter Lab остаются в `jupyter-work`, чтобы их было удобно синхронизировать с ноутбуком.
-- Если раньше данные лежали в `minio-data` или `postgres-data`, перенесите содержимое в новые папки перед запуском, чтобы сохранить окружение.
+Временная остановка контейнера, чтобы освободить ресурсы компьютера:
+
+```bash
+docker compose stop
+```
+
+## Удалить контейнер
+
+Полностью остановить и удалить контейнер (данные в примонтированных папках сохранятся):
+
+```bash
+docker compose down
+```
 
 ## Обновление окружения
-- Подтянуть свежий образ без пересборки: `docker compose pull`
-- Пересобрать после изменений в Dockerfile: `docker compose build`
+
+Подтянуть свежий образ:
+
+```bash
+docker compose pull
+```
+
+## Разработка (не для студентов)
+
+Пересобрать образ после изменений в проекте: `docker compose build`
