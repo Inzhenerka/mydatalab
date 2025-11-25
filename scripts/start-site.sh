@@ -8,7 +8,7 @@ if [[ ${1:-} == "--foreground" ]]; then
 fi
 
 STATIC_PORT=${STATIC_PORT:-1111}
-STATIC_ROOT=${STATIC_ROOT:-/home/jovyan/start}
+STATIC_ROOT=${STATIC_ROOT:-/home/jovyan/site}
 STATIC_LOG_FILE=${STATIC_LOG_FILE:-${SUPERVISOR_LOG_DIR:-/srv/mydatalab/logs}/static-site.log}
 
 log() {

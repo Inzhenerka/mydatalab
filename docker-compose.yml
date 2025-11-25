@@ -15,8 +15,8 @@ services:
       - "9010:9010" # Supervisor UI
       - "6432:5432" # PostgreSQL
     volumes:
-      - ./notebooks/iceberg:/home/jovyan/iceberg
+      - ./notebooks/demo:/home/jovyan/demo
       - ./jupyter-work:/home/jovyan/work
-      - ./minio-data:/data/minio
-      - ./postgres-data:/home/jovyan/postgres-data:Z
+      - ./service-data/minio:/data/minio
+      - ./service-data/postgres:/home/jovyan/postgres-data:Z
     restart: no

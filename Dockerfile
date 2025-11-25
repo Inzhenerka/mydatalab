@@ -1,8 +1,8 @@
 # Stage 1: pull PostgreSQL userland binaries that we will embed later
-FROM postgres:18.0-trixie AS postgres-src
+FROM postgres:18.0-trixie@sha256:41fc5342eefba6cc2ccda736aaf034bbbb7c3df0fdb81516eba1ba33f360162c AS postgres-src
 
 # Stage 2: extend the official PySpark notebook with storage services
-FROM quay.io/jupyter/pyspark-notebook:spark-4.0.1
+FROM quay.io/jupyter/pyspark-notebook:spark-4.0.1@sha256:37c62b362043b5d6876a2d93f2fce2aba741a05e7fffa166f0abaf04b6f53343
 
 # Version switches for the components we download at build time
 ARG HADOOP_AWS_VERSION=3.4.1
@@ -51,23 +51,6 @@ RUN curl -fsSL "https://github.com/lakekeeper/lakekeeper/releases/download/v${LA
     && rm "/tmp/${LAKEKEEPER_ARCHIVE}" \
     && chmod +x /usr/local/bin/lakekeeper
 
-# Prepare writable directories for the non-root notebook user
-RUN install -d -o $NB_UID -g $NB_GID /data/minio \
-    && install -d -o $NB_UID -g $NB_GID /srv/mydatalab/logs /srv/mydatalab/run \
-    && install -d -o $NB_UID -g $NB_GID /home/jovyan/.jupyter/labconfig
-
-# Tweak the Jupyter landing page
-COPY --chown=$NB_UID:$NB_GID customization/page_config.json /home/jovyan/.jupyter/labconfig/page_config.json
-
-# Static assets used by the lightweight welcome site
-COPY --chown=$NB_UID:$NB_GID start /home/jovyan/start
-
-# Copy orchestration scripts that control all bundled services
-COPY start-mydatalab.sh /usr/local/bin/start-mydatalab.sh
-COPY scripts/*.sh /usr/local/bin/
-COPY supervisor/supervisord.conf /etc/supervisor/supervisord.conf
-RUN chmod +x /usr/local/bin/start-mydatalab.sh /usr/local/bin/start-*.sh
-
 # PostgreSQL runtime copied from the official postgres:18 image
 COPY --from=postgres-src /usr/lib/postgresql /usr/lib/postgresql
 COPY --from=postgres-src /usr/share/postgresql /usr/share/postgresql
@@ -78,6 +61,26 @@ COPY --from=postgres-src /usr/lib/x86_64-linux-gnu/libcrypto.so* /usr/lib/x86_64
 COPY --from=postgres-src /etc/postgresql /etc/postgresql
 COPY --from=postgres-src /usr/local/bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY --from=postgres-src /usr/local/bin/gosu /usr/local/bin/gosu
+
+# Prepare writable directories for the non-root notebook user
+RUN install -d -o $NB_UID -g $NB_GID /data/minio \
+    && install -d -o $NB_UID -g $NB_GID /srv/mydatalab/logs /srv/mydatalab/run \
+    && install -d -o $NB_UID -g $NB_GID /home/jovyan/.jupyter/labconfig
+
+# Tweak the Jupyter landing page
+COPY --chown=$NB_UID:$NB_GID customization/page_config.json /home/jovyan/.jupyter/labconfig/page_config.json
+
+# Static assets used by the lightweight welcome site
+COPY --chown=$NB_UID:$NB_GID site /home/jovyan/site
+
+# Starter nootbook
+COPY --chown=$NB_UID:$NB_GID notebooks/START.ipynb /home/jovyan/START.ipynb
+
+# Copy orchestration scripts that control all bundled services
+COPY start-mydatalab.sh /usr/local/bin/start-mydatalab.sh
+COPY scripts/*.sh /usr/local/bin/
+COPY supervisor/supervisord.conf /etc/supervisor/supervisord.conf
+RUN chmod +x /usr/local/bin/start-mydatalab.sh /usr/local/bin/start-*.sh
 
 # Consolidated configuration for PostgreSQL, MinIO and the static server
 ENV PATH="/usr/lib/postgresql/18/bin:${PATH}" \
