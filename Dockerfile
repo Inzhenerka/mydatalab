@@ -76,6 +76,7 @@ COPY --chown=$NB_UID:$NB_GID site /home/jovyan/site
 # Copy notebooks
 COPY --chown=$NB_UID:$NB_GID notebooks/START.ipynb /home/jovyan/START.ipynb
 COPY --chown=$NB_UID:$NB_GID notebooks/demo/ /home/jovyan/demo/
+COPY --chown=$NB_UID:$NB_GID notebooks/solutions/ /home/jovyan/solutions/
 
 # Copy orchestration scripts that control all bundled services
 COPY start-mydatalab.sh /usr/local/bin/start-mydatalab.sh
