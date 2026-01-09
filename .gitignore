@@ -1,5 +1,4 @@
 .idea
 .ipynb_checkpoints
 service-data/*
-!service-data/.gitkeep
 .ipynb_checkpoints/

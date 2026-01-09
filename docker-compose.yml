@@ -16,6 +16,8 @@ services:
       - "6432:5432" # PostgreSQL
     volumes:
       - ./jupyter-work:/home/jovyan/work
-      - ./service-data/minio:/data/minio
-      - ./service-data/postgres:/home/jovyan/postgres-data:Z
+      - mydatalab_data:/var/lib/mydatalab
     restart: no
+
+volumes:
+  mydatalab_data:

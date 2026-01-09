@@ -2,12 +2,12 @@
 
 Полнофункциональная среда для изучения анализа данных и работы с большими данными. Всё необходимое уже настроено и готово к работе — просто запустите Docker и начните экспериментировать:
 
-- Jupyter-ноутбуки для экспериментов
-- PySpark для обработки данных
-- Локальный MinIO для хранения данных (S3)
-- Lakekeeper — REST-каталог Iceberg с UI
-- PostgreSQL 18 в качестве базы данных
-- Быстрый старт через Docker Compose
+-   Jupyter-ноутбуки для экспериментов
+-   PySpark для обработки данных
+-   Локальный MinIO для хранения данных (S3)
+-   Lakekeeper — REST-каталог Iceberg с UI
+-   PostgreSQL 18 в качестве базы данных
+-   Быстрый старт через Docker Compose
 
 ## Быстрый старт с нуля
 
@@ -20,15 +20,21 @@ git clone https://github.com/Inzhenerka/mydatalab
 cd mydatalab
 ```
 
+Только для пользователей **Linux**: перед первым запуском дайте права пользователю контейнера на запись ноутбуков в локальную папку проекта:
+
+```bash
+sudo chown -R 1000:100 jupyter-work
+```
+
 Подтяните готовый образ `mydatalab` из интернета
 
 ```bash
-docker compose pull    
+docker compose pull
 ```
 
 Запустите контейнер `mydatalab` из образа в синхронном режиме:
 
-```bash 
+```bash
 docker compose up
 ```
 
@@ -70,6 +76,13 @@ docker compose down
 ```bash
 docker compose pull
 ```
+
+## Хранение данных
+
+-   Рабочие файлы (ноутбуки) сохраняются локально в `./jupyter-work`.
+-   Данные сервисов (PostgreSQL, MinIO) хранятся в Docker volume `mydatalab_data`.
+
+Важно: `docker compose down` не удаляет volumes, но `docker compose down -v` удалит их вместе с данными контейнера!
 
 ## Разработка (не для студентов)
 

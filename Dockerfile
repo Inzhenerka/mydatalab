@@ -2,7 +2,7 @@
 FROM postgres:18.0-trixie@sha256:41fc5342eefba6cc2ccda736aaf034bbbb7c3df0fdb81516eba1ba33f360162c AS postgres-src
 
 # Stage 2: extend the official PySpark notebook with storage services
-FROM quay.io/jupyter/pyspark-notebook:spark-4.0.1@sha256:37c62b362043b5d6876a2d93f2fce2aba741a05e7fffa166f0abaf04b6f53343
+FROM quay.io/jupyter/pyspark-notebook:spark-4.1.0@sha256:fc726037643c16b00172eb222f6f2c1f111112d59d676a26d99595ee45dab1ef
 
 # Version switches for the components we download at build time
 ARG HADOOP_AWS_VERSION=3.4.1
@@ -63,7 +63,7 @@ COPY --from=postgres-src /usr/local/bin/docker-entrypoint.sh /usr/local/bin/dock
 COPY --from=postgres-src /usr/local/bin/gosu /usr/local/bin/gosu
 
 # Prepare writable directories for the non-root notebook user
-RUN install -d -o $NB_UID -g $NB_GID /data/minio \
+RUN install -d -o $NB_UID -g $NB_GID /var/lib/mydatalab/minio \
     && install -d -o $NB_UID -g $NB_GID /srv/mydatalab/logs /srv/mydatalab/run \
     && install -d -o $NB_UID -g $NB_GID /home/jovyan/.jupyter/labconfig
 
@@ -87,7 +87,7 @@ RUN chmod +x /usr/local/bin/start-mydatalab.sh /usr/local/bin/start-*.sh
 # Consolidated configuration for PostgreSQL, MinIO and the static server
 ENV PATH="/usr/lib/postgresql/18/bin:${PATH}" \
     PG_MAJOR=18 \
-    PGDATA=/home/jovyan/postgres-data/data \
+    PGDATA=/var/lib/mydatalab/postgres/data \
     POSTGRES_PORT=5432 \
     POSTGRES_USER=postgres \
     POSTGRES_PASSWORD=postgres \
@@ -96,10 +96,11 @@ ENV PATH="/usr/lib/postgresql/18/bin:${PATH}" \
     POSTGRES_INITDB_ARGS="--auth-host=scram-sha-256 --auth-local=trust" \
     POSTGRES_EXTRA_ARGS= \
     POSTGRES_LISTEN_ADDRESSES=* \
-    POSTGRES_DATA_DIR=/home/jovyan/postgres-data/data \
-    POSTGRES_LOG_FILE=/home/jovyan/postgres-data/postgres.log \
+    POSTGRES_DATA_DIR=/var/lib/mydatalab/postgres/data \
+    POSTGRES_LOG_FILE=/var/lib/mydatalab/postgres/postgres.log \
     POSTGRES_LOG_TAIL_LINES=200 \
     POSTGRES_ENTRYPOINT=/usr/local/bin/docker-entrypoint.sh \
+    MINIO_DATA_DIR=/var/lib/mydatalab/minio \
     MINIO_ROOT_USER=minioadmin \
     MINIO_ROOT_PASSWORD=minioadmin \
     MINIO_SERVER_ADDRESS=:9000 \
@@ -126,8 +127,8 @@ ENV PATH="/usr/lib/postgresql/18/bin:${PATH}" \
 
 # Ensure runtime directories exist for both PostgreSQL and initdb scripts
 RUN install -d -o $NB_UID -g $NB_GID \
-      /home/jovyan/postgres-data \
-      /home/jovyan/postgres-data/data \
+      /var/lib/mydatalab/postgres \
+      /var/lib/mydatalab/postgres/data \
       /var/run/postgresql \
       /docker-entrypoint-initdb.d
 

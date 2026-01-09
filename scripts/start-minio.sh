@@ -13,7 +13,7 @@ MINIO_ROOT_USER=${MINIO_ROOT_USER:-minioadmin}
 MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-minioadmin}
 MINIO_ALIAS=${MINIO_ALIAS:-local}
 MINIO_BUCKET=${MINIO_BUCKET:-mydatalab}
-MINIO_DATA_DIR=${MINIO_DATA_DIR:-/data/minio}
+MINIO_DATA_DIR=${MINIO_DATA_DIR:-/var/lib/mydatalab/minio}
 MINIO_LOG_FILE=${MINIO_LOG_FILE:-${SUPERVISOR_LOG_DIR:-/srv/mydatalab/logs}/minio.log}
 
 log() {
