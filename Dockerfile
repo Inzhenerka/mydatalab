@@ -2,7 +2,7 @@
 FROM postgres:18.0-trixie@sha256:41fc5342eefba6cc2ccda736aaf034bbbb7c3df0fdb81516eba1ba33f360162c AS postgres-src
 
 # Stage 2: extend the official PySpark notebook with storage services
-FROM quay.io/jupyter/pyspark-notebook:spark-4.1.0@sha256:fc726037643c16b00172eb222f6f2c1f111112d59d676a26d99595ee45dab1ef
+FROM quay.io/jupyter/pyspark-notebook:spark-4.0.1@sha256:37c62b362043b5d6876a2d93f2fce2aba741a05e7fffa166f0abaf04b6f53343
 
 # Version switches for the components we download at build time
 ARG HADOOP_AWS_VERSION=3.4.1
