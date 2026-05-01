@@ -13,7 +13,8 @@
 
 Установите [Docker](https://docs.docker.com/get-docker/) и [Docker Compose](https://docs.docker.com/compose/install/), если они ещё не установлены.
 
-Только для пользователей **Windows + WSL**: клонируйте проект **внутрь WSL-файловой системы** (например, в `~/projects/mydatalab`), а не в каталог вида `/mnt/c/...`. Bind-mount Docker'а на NTFS не сохраняет POSIX-права, и Jupyter будет падать с `Permission denied: work/...` при попытке сохранить ноутбук.
+> [!WARNING]
+> 🪟 **Windows + WSL:** клонируйте проект **внутрь WSL-файловой системы** (например, в `~/projects/mydatalab`), а **не** в `/mnt/c/...`. Bind-mount Docker'а на NTFS не сохраняет POSIX-права, и Jupyter будет падать с `Permission denied: work/...` при попытке сохранить ноутбук.
 
 Клонируйте репозиторий и перейдите в папку проекта:
 
@@ -22,23 +23,25 @@ git clone https://github.com/Inzhenerka/mydatalab
 cd mydatalab
 ```
 
-Только для пользователей **Linux и WSL**: перед первым запуском дайте права пользователю контейнера (UID 1000, GID 100 — это `jovyan` внутри образа) на запись ноутбуков в локальную папку проекта:
+> [!IMPORTANT]
+> 🐧 **Linux** / 🪟 **WSL:** перед первым запуском дайте права пользователю контейнера (UID 1000, GID 100 — это `jovyan` внутри образа) на запись ноутбуков в локальную папку проекта:
+>
+> ```bash
+> sudo chown -R 1000:100 jupyter-work
+> ```
+>
+> Без этого Jupyter не сможет сохранять файлы и будет выдавать ошибку `Permission denied`.
 
-```bash
-sudo chown -R 1000:100 jupyter-work
-```
+> [!IMPORTANT]
+> 🍎 **macOS на Apple Silicon (M1/M2/M3/M4):** текущий образ собран только под `linux/amd64`, поэтому перед `docker compose pull` разрешите запуск amd64-образов через Rosetta:
+>
+> ```bash
+> export DOCKER_DEFAULT_PLATFORM=linux/amd64
+> ```
+>
+> Эту переменную удобно прописать в `~/.zshrc`. В Docker Desktop должна быть включена опция «Use Rosetta for x86_64/amd64 emulation» (Settings → General). Производительность (особенно Spark/JVM) ниже нативной — это временное решение до выхода multi-arch образа.
 
-Без этого Jupyter не сможет сохранять файлы и будет выдавать ошибку `Permission denied`.
-
-Только для пользователей **Mac на Apple Silicon (M1/M2/M3/M4)**: текущий образ собран только под `linux/amd64`, поэтому перед `docker compose pull` нужно явно разрешить запуск amd64-образов через Rosetta:
-
-```bash
-export DOCKER_DEFAULT_PLATFORM=linux/amd64
-```
-
-Эту переменную удобно прописать в `~/.zshrc`. В Docker Desktop должна быть включена опция «Use Rosetta for x86_64/amd64 emulation» (Settings → General). Производительность (особенно Spark/JVM) ниже нативной — это временное решение до выхода multi-arch образа.
-
-Подтяните готовый образ `mydatalab` из интернета
+Подтяните готовый образ `mydatalab` из интернета:
 
 ```bash
 docker compose pull
