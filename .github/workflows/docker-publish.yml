@@ -4,6 +4,18 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'Dockerfile'
+      - '.github/workflows/docker-publish.yml'
+      - 'start-mydatalab.sh'
+      - 'scripts/**'
+      - 'supervisor/**'
+      - 'customization/**'
+      - 'site/**'
+      - 'notebooks/START.ipynb'
+      - 'notebooks/demo/**'
+      - 'notebooks/solutions/**'
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
