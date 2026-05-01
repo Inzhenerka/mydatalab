@@ -13,9 +13,6 @@
 
 Установите [Docker](https://docs.docker.com/get-docker/) и [Docker Compose](https://docs.docker.com/compose/install/), если они ещё не установлены.
 
-> [!WARNING]
-> 🪟 **Windows + WSL:** клонируйте проект **внутрь WSL-файловой системы** (например, в `~/projects/mydatalab`), а **не** в `/mnt/c/...`. Bind-mount Docker'а на NTFS не сохраняет POSIX-права, и Jupyter будет падать с `Permission denied: work/...` при попытке сохранить ноутбук.
-
 Клонируйте репозиторий и перейдите в папку проекта:
 
 ```bash
@@ -24,7 +21,7 @@ cd mydatalab
 ```
 
 > [!IMPORTANT]
-> 🐧 **Linux** / 🪟 **WSL:** перед первым запуском дайте права пользователю контейнера (UID 1000, GID 100 — это `jovyan` внутри образа) на запись ноутбуков в локальную папку проекта:
+> 🐧 **Linux:** перед первым запуском дайте права пользователю контейнера (UID 1000, GID 100 — это `jovyan` внутри образа) на запись ноутбуков в локальную папку проекта:
 >
 > ```bash
 > sudo chown -R 1000:100 jupyter-work
@@ -98,6 +95,15 @@ docker compose pull
 -   Данные сервисов (PostgreSQL, MinIO) хранятся в Docker volume `mydatalab_data`.
 
 Важно: `docker compose down` не удаляет volumes, но `docker compose down -v` удалит их вместе с данными контейнера!
+
+## Если что-то не работает
+
+**Jupyter выдаёт `Permission denied: work/<имя>.ipynb` при сохранении ноутбука.**
+
+Проверьте по очереди:
+
+1. 🐧 **Linux** / 🪟 **Docker внутри WSL:** выполнили ли вы `sudo chown -R 1000:100 jupyter-work` после клонирования? Без этого `jovyan` (UID 1000) внутри контейнера не может писать в смонтированный каталог.
+2. 🪟 **Docker внутри WSL + проект на `/mnt/c/...`:** перенесите проект в WSL-файловую систему (например, `~/projects/mydatalab`) и из новой папки выполните `sudo chown -R 1000:100 jupyter-work`. На `/mnt/c` POSIX-права не транслируются, и `chown` там не действует.
 
 ## Разработка (не для студентов)
 
