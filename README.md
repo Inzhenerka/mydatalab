@@ -26,6 +26,14 @@ cd mydatalab
 sudo chown -R 1000:100 jupyter-work
 ```
 
+Только для пользователей **Mac на Apple Silicon (M1/M2/M3/M4)**: текущий образ собран только под `linux/amd64`, поэтому перед `docker compose pull` нужно явно разрешить запуск amd64-образов через Rosetta:
+
+```bash
+export DOCKER_DEFAULT_PLATFORM=linux/amd64
+```
+
+Эту переменную удобно прописать в `~/.zshrc`. В Docker Desktop должна быть включена опция «Use Rosetta for x86_64/amd64 emulation» (Settings → General). Производительность (особенно Spark/JVM) ниже нативной — это временное решение до выхода multi-arch образа.
+
 Подтяните готовый образ `mydatalab` из интернета
 
 ```bash
