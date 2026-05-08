@@ -1,8 +1,27 @@
 # Stage 1: pull PostgreSQL userland binaries that we will embed later
 FROM postgres:18.0-trixie@sha256:41fc5342eefba6cc2ccda736aaf034bbbb7c3df0fdb81516eba1ba33f360162c AS postgres-src
 
+# Stage 1b: gather arch-specific PostgreSQL libs into an arch-agnostic path so the
+# final stage does not need to hardcode /usr/lib/<triplet>. This stage runs on the
+# target platform, so the correct multiarch dir is auto-selected by buildx.
+FROM postgres-src AS postgres-libs
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN set -eux; \
+    if   [ -d /usr/lib/x86_64-linux-gnu ];  then ARCH_DIR=x86_64-linux-gnu; \
+    elif [ -d /usr/lib/aarch64-linux-gnu ]; then ARCH_DIR=aarch64-linux-gnu; \
+    else echo "unsupported architecture: $(uname -m)" >&2; exit 1; fi; \
+    install -d /pglibs; \
+    cp -a /usr/lib/${ARCH_DIR}/libpq.so*     /pglibs/; \
+    cp -a /usr/lib/${ARCH_DIR}/libicu*.so*   /pglibs/; \
+    cp -a /usr/lib/${ARCH_DIR}/libssl.so*    /pglibs/; \
+    cp -a /usr/lib/${ARCH_DIR}/libcrypto.so* /pglibs/; \
+    echo "${ARCH_DIR}" > /pglibs/.arch_dir
+
 # Stage 2: extend the official PySpark notebook with storage services
 FROM quay.io/jupyter/pyspark-notebook:spark-4.0.1@sha256:37c62b362043b5d6876a2d93f2fce2aba741a05e7fffa166f0abaf04b6f53343
+
+# Provided by buildx for multi-arch builds; values: amd64 | arm64 | ...
+ARG TARGETARCH
 
 # Version switches for the components we download at build time
 ARG HADOOP_AWS_VERSION=3.4.1
@@ -13,7 +32,6 @@ ARG ICEBERG_SCALA_VERSION=2.13
 ARG MINIO_SERVER_RELEASE=2025-09-07T16-13-09Z
 ARG MINIO_CLIENT_RELEASE=2025-08-13T08-35-41Z
 ARG LAKEKEEPER_VERSION=0.10.4
-ARG LAKEKEEPER_ARCHIVE=lakekeeper-x86_64-unknown-linux-gnu.tar.gz
 
 USER root
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -36,31 +54,44 @@ RUN apt-get update && \
 
 RUN install -d /etc/supervisor
 
-# MinIO server binary
-RUN curl -fsSL "https://dl.min.io/server/minio/release/linux-amd64/archive/minio.RELEASE.${MINIO_SERVER_RELEASE}" -o /usr/local/bin/minio \
+# MinIO server binary (linux-amd64 / linux-arm64 — paths align with $TARGETARCH)
+RUN curl -fsSL "https://dl.min.io/server/minio/release/linux-${TARGETARCH}/archive/minio.RELEASE.${MINIO_SERVER_RELEASE}" -o /usr/local/bin/minio \
     && chmod +x /usr/local/bin/minio
 
 # MinIO client (mc) for bootstrap tasks
-RUN curl -fsSL "https://dl.min.io/client/mc/release/linux-amd64/archive/mc.RELEASE.${MINIO_CLIENT_RELEASE}" -o /usr/local/bin/mc \
+RUN curl -fsSL "https://dl.min.io/client/mc/release/linux-${TARGETARCH}/archive/mc.RELEASE.${MINIO_CLIENT_RELEASE}" -o /usr/local/bin/mc \
     && chmod +x /usr/local/bin/mc
 
 # Lakekeeper binary (Iceberg REST catalog)
-RUN curl -fsSL "https://github.com/lakekeeper/lakekeeper/releases/download/v${LAKEKEEPER_VERSION}/${LAKEKEEPER_ARCHIVE}" \
-      -o "/tmp/${LAKEKEEPER_ARCHIVE}" \
-    && tar -xzf "/tmp/${LAKEKEEPER_ARCHIVE}" -C /usr/local/bin \
-    && rm "/tmp/${LAKEKEEPER_ARCHIVE}" \
-    && chmod +x /usr/local/bin/lakekeeper
+# Note: upstream ships Linux arm64 only as a statically-linked musl build, while
+# amd64 is glibc. Both run fine inside this Debian-based image.
+RUN set -eux; \
+    case "$TARGETARCH" in \
+      amd64) LK_ARCHIVE="lakekeeper-x86_64-unknown-linux-gnu.tar.gz" ;; \
+      arm64) LK_ARCHIVE="lakekeeper-aarch64-unknown-linux-musl.tar.gz" ;; \
+      *) echo "Unsupported TARGETARCH for Lakekeeper: $TARGETARCH" >&2; exit 1 ;; \
+    esac; \
+    curl -fsSL "https://github.com/lakekeeper/lakekeeper/releases/download/v${LAKEKEEPER_VERSION}/${LK_ARCHIVE}" \
+      -o "/tmp/${LK_ARCHIVE}"; \
+    tar -xzf "/tmp/${LK_ARCHIVE}" -C /usr/local/bin; \
+    rm "/tmp/${LK_ARCHIVE}"; \
+    chmod +x /usr/local/bin/lakekeeper
 
 # PostgreSQL runtime copied from the official postgres:18 image
 COPY --from=postgres-src /usr/lib/postgresql /usr/lib/postgresql
 COPY --from=postgres-src /usr/share/postgresql /usr/share/postgresql
-COPY --from=postgres-src /usr/lib/x86_64-linux-gnu/libpq.so* /usr/lib/x86_64-linux-gnu/
-COPY --from=postgres-src /usr/lib/x86_64-linux-gnu/libicu*.so* /usr/lib/x86_64-linux-gnu/
-COPY --from=postgres-src /usr/lib/x86_64-linux-gnu/libssl.so* /usr/lib/x86_64-linux-gnu/
-COPY --from=postgres-src /usr/lib/x86_64-linux-gnu/libcrypto.so* /usr/lib/x86_64-linux-gnu/
 COPY --from=postgres-src /etc/postgresql /etc/postgresql
 COPY --from=postgres-src /usr/local/bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY --from=postgres-src /usr/local/bin/gosu /usr/local/bin/gosu
+
+# Arch-specific PostgreSQL libs were collected by the postgres-libs stage
+# under /pglibs (with .arch_dir noting the multiarch triplet).
+COPY --from=postgres-libs /pglibs /tmp/pglibs
+RUN set -eux; \
+    ARCH_DIR=$(cat /tmp/pglibs/.arch_dir); \
+    install -d "/usr/lib/${ARCH_DIR}"; \
+    cp -a /tmp/pglibs/*.so* "/usr/lib/${ARCH_DIR}/"; \
+    rm -rf /tmp/pglibs
 
 # Prepare writable directories for the non-root notebook user
 RUN install -d -o $NB_UID -g $NB_GID /var/lib/mydatalab/minio \
